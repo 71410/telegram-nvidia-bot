@@ -5,8 +5,13 @@ import os
 import threading
 from config import MAX_HISTORY_ROUNDS, DEFAULT_MODEL
 
-# 数据库路径（Railway 上 /data 目录持久化，本地默认项目目录）
-DB_PATH = os.getenv("DB_PATH", os.path.join(os.path.dirname(__file__), "conversations.db"))
+# 数据库路径
+# Railway: 持久卷挂载在 /data，优先使用
+# 本地: 项目目录下的 conversations.db
+if os.path.isdir("/data"):
+    DB_PATH = os.path.join("/data", "conversations.db")
+else:
+    DB_PATH = os.getenv("DB_PATH", os.path.join(os.path.dirname(__file__), "conversations.db"))
 
 # 线程本地存储，每个线程一个连接（避免 SQLite 多线程问题）
 _local = threading.local()
